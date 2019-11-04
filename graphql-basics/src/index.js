@@ -1,34 +1,56 @@
 import { GraphQLServer } from 'graphql-yoga';
 
-// Demo user data
+// +++++++++++ sample datas ++++++++++++++
 const users = [
     {
         id: 1,
-        name: 'Tilek',
-        email: 'tilek@example.com',
+        name: 'Andrew',
+        email: 'andrew@example.com',
         age: 28,
     },
     {
         id: 2,
-        name: 'Bermet',
-        email: 'bermet@example.com',
+        name: 'Sarah',
+        email: 'sarah@example.com',
     },
     {
         id: 3,
-        name: 'Emin',
-        email: 'emin@example.com',
-    },
-    {
-        id: 4,
-        name: 'Safia',
-        email: 'safia@example.com',
+        name: 'Mike',
+        email: 'mike@example.com',
     },
 ];
 
-// Type definitions (schema)
+const posts = [
+    {
+        id: 10,
+        title: 'GraphQL 101',
+        body: 'This is how to use GraphQL...',
+        isPublished: true,
+        author: 1,
+    },
+    {
+        id: 2,
+        title: 'GraphQL 201',
+        body: 'This is the advanced GraphQL post...',
+        isPublished: false,
+        author: 1,
+    },
+    {
+        id: 3,
+        title: 'Programming Music',
+        body: '',
+        isPublished: true,
+        author: 2,
+    },
+];
+
+// +++++++++++++++++++++++++++++++++++
+
+//  Schemas
 const typeDefs = `
     type Query {
-        users: [User!]!
+        users(query: String): [User!]!
+        posts(query: String): [Post!]!
         me: User!
         post: Post!
     }
@@ -41,19 +63,37 @@ const typeDefs = `
     }
 
     type Post {
-        id: ID!
+        id: ID! 
         title: String!
         body: String!
         isPublished: Boolean!
+        author: User!
     }
 `;
 
 // Resolvers
 const resolvers = {
     Query: {
-        users(parent, args, ctx, info) {
-            return users;
+        posts(parent, args, ctx, info) {
+            if (!args.query) {
+                return posts;
+            }
+
+            return posts.filter(post => {
+                const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase());
+                const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase());
+                return isTitleMatch || isBodyMatch;
+            });
         },
+
+        users(parent, args, ctx, info) {
+            if (!args.query) {
+                return users;
+            }
+
+            return users.filter(user => user.name.toLowerCase().includes(args.query.toLowerCase()));
+        },
+
         me() {
             return {
                 id: '234asdad',
@@ -69,6 +109,12 @@ const resolvers = {
                 body: 'This is post body',
                 isPublished: true,
             };
+        },
+    },
+
+    Post: {
+        author(parent, args, ctx, info) {
+            return users.find(user => user.id === parent.author);
         },
     },
 };
