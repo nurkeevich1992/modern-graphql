@@ -1,26 +1,28 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
 import { GraphQLServer } from 'graphql-yoga';
+import uuidv4 from 'uuid';
 
 const authors = [
     {
-        id: 1,
+        id: '1',
         name: 'Tilekbek Kadyrov',
         email: 'tilekbek@example.com',
         age: 28,
     },
     {
-        id: 2,
+        id: '2',
         name: 'Bermet Kalbotoeva',
         email: 'bermet@example.com',
     },
     {
-        id: 3,
+        id: '3',
         name: 'Emin Nurke',
         email: 'emin@example.com',
         age: 4,
     },
     {
-        id: 4,
+        id: '4',
         name: 'Safia Nurke',
         email: 'safia@example.com',
     },
@@ -117,6 +119,11 @@ const typeDefs = `
         comments(query: String): [Comment]!
     }
 
+    type Mutation {
+        createAuthor(name: String!, email: String!, age: Int): Author!
+        createPost(title: String!, body: String!, isPublished: Boolean, author: ID!): Post!
+    }
+
     type Author {
         id: ID!
         name: String!
@@ -177,6 +184,48 @@ const resolvers = {
             }
 
             return comments.filter(comment => comment.text.toLowerCase().includes(args.query.toLowerCase()));
+        },
+    },
+
+    Mutation: {
+        createAuthor(parent, args, ctx, info) {
+            // eslint-disable-next-line no-shadow
+            const emailTaken = authors.some(author => author.email === args.email);
+
+            if (emailTaken) {
+                throw new Error('Email taken.');
+            }
+
+            const author = {
+                id: uuidv4(),
+                name: args.name,
+                email: args.email,
+                age: args.age,
+            };
+
+            authors.push(author);
+
+            return author;
+        },
+
+        createPost(parent, args, ctx, info) {
+            const authorExist = authors.some(author => author.id === args.author);
+
+            if (!authorExist) {
+                throw new Error('Author not found!');
+            }
+
+            const post = {
+                id: uuidv4(),
+                title: args.title,
+                body: args.body,
+                isPublished: args.isPublished,
+                author: args.author,
+            };
+
+            posts.push(post);
+
+            return post;
         },
     },
 
