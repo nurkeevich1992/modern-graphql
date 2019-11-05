@@ -111,12 +111,14 @@ const resolvers = {
     },
 
     Post: {
+        // eslint-disable-next-line no-unused-vars
         author(parent, args, ctx, info) {
             return authors.find(author => author.id === parent.author);
         },
     },
 
     Author: {
+        // eslint-disable-next-line no-unused-vars
         posts(parent, args, ctx, info) {
             return posts.filter(post => post.author === parent.id);
         },
