@@ -2,7 +2,6 @@ import uuidv4 from 'uuid';
 
 const Mutation = {
     createAuthor(parent, args, { db }, info) {
-        // eslint-disable-next-line no-shadow
         const emailTaken = db.authors.some(author => author.email === args.data.email);
 
         if (emailTaken) {
