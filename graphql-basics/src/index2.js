@@ -3,6 +3,10 @@
 import { GraphQLServer } from 'graphql-yoga';
 import uuidv4 from 'uuid';
 
+/*
+
+*/
+
 const authors = [
     {
         id: 1,
@@ -120,8 +124,28 @@ const typeDefs = `
     }
 
     type Mutation {
-        createAuthor(name: String!, email: String!, age: Int): Author!
-        createPost(title: String!, body: String!, isPublished: Boolean, author: ID!): Post!
+        createAuthor(data: CreateAuthorInput): Author!
+        createPost(data: CreatePostInput): Post!
+        createComment(data: CreateCommentInput): Comment!
+    }
+
+    input CreateCommentInput {
+        text: String!
+        author: ID!
+        post: ID!
+    }
+
+    input CreatePostInput {
+        title: String!
+        body: String!
+        isPublished: Boolean,
+        author: ID!
+    }
+
+    input CreateAuthorInput {
+        name: String!
+        email: String!
+        age: Int
     }
 
     type Author {
@@ -190,7 +214,7 @@ const resolvers = {
     Mutation: {
         createAuthor(parent, args, ctx, info) {
             // eslint-disable-next-line no-shadow
-            const emailTaken = authors.some(author => author.email === args.email);
+            const emailTaken = authors.some(author => author.email === args.data.email);
 
             if (emailTaken) {
                 throw new Error('Email taken.');
@@ -198,9 +222,7 @@ const resolvers = {
 
             const author = {
                 id: uuidv4(),
-                name: args.name,
-                email: args.email,
-                age: args.age,
+                ...args.data,
             };
 
             authors.push(author);
@@ -209,7 +231,7 @@ const resolvers = {
         },
 
         createPost(parent, args, ctx, info) {
-            const authorExist = authors.some(author => author.id === args.author);
+            const authorExist = authors.some(author => author.id === args.data.author);
 
             if (!authorExist) {
                 throw new Error('Author not found!');
@@ -217,15 +239,32 @@ const resolvers = {
 
             const post = {
                 id: uuidv4(),
-                title: args.title,
-                body: args.body,
-                isPublished: args.isPublished,
-                author: args.author,
+                ...args.data,
             };
 
             posts.push(post);
 
             return post;
+        },
+
+        createComment(parent, args, ctx, info) {
+            const authorExist = authors.some(author => author.id === args.data.author);
+            const postExistAndPublished = posts.some(post => post.id === args.data.post && post.isPublished === true);
+
+            if (!authorExist) {
+                throw new Error('Unable to find author');
+            } else if (!postExistAndPublished) {
+                throw new Error('Unable to find post OR not be published');
+            }
+
+            const comment = {
+                id: uuidv4(),
+                ...args.data,
+            };
+
+            comments.push(comment);
+
+            return comment;
         },
     },
 
