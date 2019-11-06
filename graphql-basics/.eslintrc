@@ -2,6 +2,8 @@
   "extends": ["wesbos"],
   "rules": {
     "no-console": 1,
+    "no-shadow": "off",
+    "no-unused-vars": "off",
     "prettier/prettier": [
       "error",
       {

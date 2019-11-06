@@ -41,6 +41,34 @@ const Mutation = {
         return deletedUsers[0];
     },
 
+    updateAuthor(parent, { id, data }, { db }, info) {
+        const author = db.authors.find(author => author.id === id);
+
+        if (!author) {
+            throw new Error('Author not found!');
+        }
+
+        if (typeof data.email === 'string') {
+            const emailExist = db.authors.find(author => author.email === data.email);
+
+            if (emailExist) {
+                throw new Error('Email is taken!');
+            }
+
+            author.email = data.email;
+        }
+
+        if (typeof data.name === 'string') {
+            author.name = data.name;
+        }
+
+        if (typeof data.age !== 'undefined') {
+            author.age = data.age;
+        }
+
+        return author;
+    },
+
     createPost(parent, args, { db }, info) {
         const authorExist = db.authors.some(author => author.id === args.data.author);
 
@@ -75,6 +103,28 @@ const Mutation = {
         return deletedPosts[0];
     },
 
+    updatePost(parent, { id, data }, { db }, info) {
+        const post = db.posts.find(post => post.id === id);
+
+        if (!post) {
+            throw new Error('Could not find post!');
+        }
+
+        if (typeof data.title === 'string') {
+            post.title = data.title;
+        }
+
+        if (typeof data.body === 'string') {
+            post.body = data.body;
+        }
+
+        if (typeof data.isPublished !== 'undefined') {
+            post.isPublished = data.isPublished;
+        }
+
+        return post;
+    },
+
     createComment(parent, args, { db }, info) {
         const authorExist = db.authors.some(author => author.id === args.data.author);
         const postExistAndPublished = db.posts.some(post => post.id === args.data.post && post.isPublished === true);
@@ -105,6 +155,20 @@ const Mutation = {
         const deletedComment = db.comments.splice(commentIndex, 1);
 
         return deletedComment[0];
+    },
+
+    updateComment(parent, { id, data }, { db }, info) {
+        const comment = db.comments.find(comment => comment.id === id);
+
+        if (!comment) {
+            throw new Error('Comment not found!');
+        }
+
+        if (typeof data.text === 'string') {
+            comment.text = data.text;
+        }
+
+        return comment;
     },
 };
 
