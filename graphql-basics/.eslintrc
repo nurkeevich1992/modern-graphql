@@ -4,6 +4,7 @@
     "no-console": 1,
     "no-shadow": "off",
     "no-unused-vars": "off",
+    "no-plusplus": "off",
     "prettier/prettier": [
       "error",
       {

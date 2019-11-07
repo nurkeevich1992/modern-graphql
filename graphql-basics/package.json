@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index2.js --ext js,graphql --exec babel-node",
+    "start": "nodemon src/index.js --ext js,graphql --exec babel-node",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
