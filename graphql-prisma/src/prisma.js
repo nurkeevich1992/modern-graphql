@@ -5,6 +5,8 @@ const prisma = new Prisma({
     endpoint: 'http://localhost:4466',
 });
 
+export { prisma as default };
+
 // prisma.query prisma.mutation prisma subscription prisma.exists
 
 // 1: Create new post
@@ -56,32 +58,32 @@ const prisma = new Prisma({
 //         console.log(data);
 //     });
 
-const updatePostForUser = async (postId, data) => {
-    const postExists = prisma.exists.Post({
-        id: postId,
-    });
+// const updatePostForUser = async (postId, data) => {
+//     const postExists = prisma.exists.Post({
+//         id: postId,
+//     });
 
-    if (!postExists) {
-        throw new Error('Post not found!');
-    }
+//     if (!postExists) {
+//         throw new Error('Post not found!');
+//     }
 
-    const post = await prisma.mutation.updatePost(
-        {
-            where: { id: postId },
-            data,
-        },
-        '{ author { id name email posts { id title body isPublished } } }'
-    );
+//     const post = await prisma.mutation.updatePost(
+//         {
+//             where: { id: postId },
+//             data,
+//         },
+//         '{ author { id name email posts { id title body isPublished } } }'
+//     );
 
-    return post.author;
-};
+//     return post.author;
+// };
 
-updatePostForUser('ck2sio0gu00g20862hlkcqzy1', {
-    isPublished: true,
-})
-    .then(user => {
-        console.log(JSON.stringify(user, undefined, 2));
-    })
-    .catch(error => {
-        console.log(error.message);
-    });
+// updatePostForUser('ck2sio0gu00g20862hlkcqzy1', {
+//     isPublished: true,
+// })
+//     .then(user => {
+//         console.log(JSON.stringify(user, undefined, 2));
+//     })
+//     .catch(error => {
+//         console.log(error.message);
+//     });

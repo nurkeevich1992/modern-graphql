@@ -50,20 +50,17 @@ input UpdatePostInput {
 input CreateAuthorInput {
   name: String!
   email: String!
-  age: Int
 }
 
 input UpdateAuthorInput {
   name: String
   email: String
-  age: Int
 }
 
 type Author {
   id: ID!
   name: String!
   email: String!
-  age: Int
   posts: [Post]!
   comments: [Comment]!
 }

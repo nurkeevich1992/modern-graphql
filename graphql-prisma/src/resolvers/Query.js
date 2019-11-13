@@ -1,35 +1,30 @@
 const Query = {
-    authors(parent, args, { db }, info) {
-        if (!args.query) {
-            return db.authors;
+    authors(parent, args, { prisma }, info) {
+        const opArgs = {};
+
+        if (args.query) {
+            opArgs.where = {
+                OR: [{ name_contains: args.query }, { email_contains: args.query }],
+            };
         }
 
-        return db.authors.filter(author => {
-            const authorName = author.name.toLowerCase();
-            const queryName = args.query.toLowerCase();
-            return authorName.includes(queryName);
-        });
+        return prisma.query.users(opArgs, info);
     },
 
-    posts(parent, args, { db }, info) {
-        if (!args.query) {
-            return db.posts;
+    posts(parent, args, { prisma }, info) {
+        const opArgs = {};
+
+        if (args.query) {
+            opArgs.where = {
+                OR: [{ title_contains: args.query }, { body_contains: args.query }],
+            };
         }
 
-        return db.posts.filter(post => {
-            const isTitleMatch = post.title.toLowerCase().includes(args.query.toLowerCase());
-            const isBodyMatch = post.body.toLowerCase().includes(args.query.toLowerCase());
-
-            return isTitleMatch || isBodyMatch;
-        });
+        return prisma.query.posts(opArgs, info);
     },
 
-    comments(parent, args, { db }, info) {
-        if (!args.query) {
-            return db.comments;
-        }
-
-        return db.comments.filter(comment => comment.text.toLowerCase().includes(args.query.toLowerCase()));
+    comments(parent, args, { prisma }, info) {
+        return prisma.query.comments(null, info);
     },
 };
 
