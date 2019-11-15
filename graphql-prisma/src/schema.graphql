@@ -50,6 +50,7 @@ input UpdatePostInput {
 input CreateAuthorInput {
   name: String!
   email: String!
+  password: String!
 }
 
 input UpdateAuthorInput {
@@ -61,6 +62,7 @@ type Author {
   id: ID!
   name: String!
   email: String!
+  password: String!
   posts: [Post]!
   comments: [Comment]!
 }
@@ -89,15 +91,15 @@ enum MutationType {
 
 type CommentSubscriptionPayload {
   mutation: MutationType!
-  data: Comment!
+  node: Comment
 }
 
 type PostSubscriptionPayload {
   mutation: MutationType!
-  data: Post!
+  node: Post
 }
 
 type AuthorSubscriptionPayload {
   mutation: MutationType!
-  data: Author!
+  node: Author
 }
