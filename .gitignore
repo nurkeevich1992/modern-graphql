@@ -1,3 +1,4 @@
 graphql-basics/node_modules
 graphql-prisma/node_modules
+graphql-prisma/yarn.lock
 .vscode
