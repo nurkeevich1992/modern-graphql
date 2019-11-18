@@ -1,8 +1,10 @@
 type Query {
-  authors(query: String): [Author]!
-  posts(query: String): [Post]!
-  comments(query: String): [Comment]!
+  authors(query: String, first: Int, skip: Int, after: String): [Author]!
+  posts(query: String, first: Int, skip: Int, after: String): [Post]!
+  comments(query: String, first: Int, skip: Int): [Comment]!
   post(id: ID!): Post!
+  me: Author!
+  myPosts(query: String, first: Int, skip: Int, after: String): [Post]!
 }
 
 type Mutation {
@@ -35,6 +37,7 @@ type Subscription {
   comment(postId: ID!): CommentSubscriptionPayload!
   post: PostSubscriptionPayload!
   author: AuthorSubscriptionPayload!
+  myPost: PostSubscriptionPayload!
 }
 
 input CreateCommentInput {
@@ -67,12 +70,13 @@ input CreateAuthorInput {
 input UpdateAuthorInput {
   name: String
   email: String
+  password: String
 }
 
 type Author {
   id: ID!
   name: String!
-  email: String!
+  email: String
   password: String!
   posts: [Post]!
   comments: [Comment]!

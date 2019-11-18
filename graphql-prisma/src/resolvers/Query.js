@@ -2,11 +2,18 @@ import getUserId from '../utils/getUserId';
 
 const Query = {
     authors(parent, args, { prisma }, info) {
-        const opArgs = {};
-
+        const opArgs = {
+            first: args.first,
+            skip: args.skip,
+            after: args.after,
+        };
         if (args.query) {
             opArgs.where = {
-                OR: [{ name_contains: args.query }, { email_contains: args.query }],
+                OR: [
+                    {
+                        name_contains: args.query,
+                    },
+                ],
             };
         }
 
@@ -14,19 +21,57 @@ const Query = {
     },
 
     posts(parent, args, { prisma }, info) {
-        const opArgs = {};
+        const opArgs = {
+            where: {
+                isPublished: true,
+            },
+            first: args.first,
+            skip: args.skip,
+            after: args.after,
+        };
 
         if (args.query) {
-            opArgs.where = {
-                OR: [{ title_contains: args.query }, { body_contains: args.query }],
-            };
+            opArgs.where.OR = [{ title_contains: args.query }, { body_contains: args.query }];
+        }
+
+        return prisma.query.posts(opArgs, info);
+    },
+
+    myPosts(parent, args, { prisma, request }, info) {
+        const userId = getUserId(request);
+
+        const opArgs = {
+            where: {
+                author: {
+                    id: userId,
+                },
+            },
+            first: args.first,
+            skip: args.skip,
+            after: args.after,
+        };
+
+        if (args.query) {
+            opArgs.where.OR = [
+                {
+                    title_contains: args.query,
+                },
+                {
+                    body_contains: args.query,
+                },
+            ];
         }
 
         return prisma.query.posts(opArgs, info);
     },
 
     comments(parent, args, { prisma }, info) {
-        return prisma.query.comments(null, info);
+        const opArgs = {
+            first: args.first,
+            skip: args.skip,
+        };
+
+        return prisma.query.comments(opArgs, info);
     },
 
     async post(parent, { id }, { prisma, request }, info) {
@@ -56,6 +101,16 @@ const Query = {
         }
 
         return posts[0];
+    },
+
+    me(parent, args, { prisma, request }, info) {
+        const userId = getUserId(request);
+
+        return prisma.query.user({
+            where: {
+                id: userId,
+            },
+        });
     },
 };
 
